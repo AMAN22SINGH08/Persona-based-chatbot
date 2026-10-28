@@ -10,7 +10,12 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip()
 
-DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'persona_chatbot.db'}")
+# On Vercel or AWS Lambda serverless environments, use writable /tmp for SQLite
+if os.getenv("VERCEL") == "1" or os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
+    DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:////tmp/persona_chatbot.db")
+else:
+    DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'persona_chatbot.db'}")
+
 DEMO_MODE_FORCED = os.getenv("DEMO_MODE", "auto").lower()
 
 def is_demo_mode() -> bool:
